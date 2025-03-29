@@ -56,21 +56,27 @@ export const UserList = () => {
           },
         }}
       >
-        <FunctionField
-          render={(record) => <AvatarField record={record} />}
+        <FunctionField render={(record) => <AvatarField record={record} />} />
+        <TextField
+          source="user_id"
+          label="ID"
+          sx={{fontWeight: "italic"}}
         />
-        <TextField source="user_name" label="Nom" sx={{ color: "#0077FF", fontFamily: "Poppins", fontSize: "1.1rem" }} />
-        <TextField source="user_email" label="Email" sx={{fontFamily: "Poppins", fontSize: "1.1rem"}} />
+        <TextField
+          source="user_name"
+          label="Nom"
+          sx={{ color: "#0077FF", fontFamily: "Poppins", fontSize: "1rem" }}
+        />
+        <TextField
+          source="user_email"
+          label="Email"
+          sx={{ fontFamily: "Poppins", fontSize: "1rem" }}
+        />
         <DateField
           source="user_first_login_date"
           label="Date de création"
-          locales="fr-FR"
-          options={{
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }}
-          sx={{ color: "#0077FF", fontFamily: "Poppins", fontSize: "1.1rem" }}
+          showTime
+          sx={{ color: "#0077FF", fontFamily: "Poppins", fontSize: "1rem"}}
         />
       </Datagrid>
     </List>

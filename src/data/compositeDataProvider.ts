@@ -2,7 +2,7 @@ import { userDataProvider } from "./users-data-provider.ts";
 import { eventsDataProvider } from "./events-data-provider.ts";
 
 const compositeDataProvider = {
-  getList: async (resource, params) => {
+  getList: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.getList(resource, params);
     } else if (resource === "events") {
@@ -11,7 +11,7 @@ const compositeDataProvider = {
     throw new Error(`Unknown resource: ${resource}`);
   },
 
-  getOne: async (resource, params) => {
+  getOne: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.getOne(resource, params);
     } else if (resource === "events") {
@@ -20,7 +20,7 @@ const compositeDataProvider = {
     throw new Error(`Unknown resource: ${resource}`);
   },
 
-  getMany: async (resource, params) => {
+  getMany: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.getMany(resource, params);
     } else if (resource === "events") {
@@ -29,7 +29,7 @@ const compositeDataProvider = {
     throw new Error(`Unknown resource: ${resource}`);
   },
 
-  create: async (resource, params) => {
+  create: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.create(resource, params);
     } else if (resource === "events") {
@@ -38,7 +38,7 @@ const compositeDataProvider = {
     throw new Error(`Unknown resource: ${resource}`);
   },
 
-  update: async (resource, params) => {
+  update: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.update(resource, params);
     } else if (resource === "events") {
@@ -47,7 +47,7 @@ const compositeDataProvider = {
     throw new Error(`Unknown resource: ${resource}`);
   },
 
-  delete: async (resource, params) => {
+  delete: async (resource: any, params: any) => {
     if (resource === "users") {
       return userDataProvider.delete(resource, params);
     } else if (resource === "events") {
