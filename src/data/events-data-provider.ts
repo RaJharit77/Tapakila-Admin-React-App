@@ -1,5 +1,5 @@
 import { fetchUtils } from "react-admin";
-import { stringify } from "query-string";
+import stringify from "query-string";
 
 interface Event {
     event_id: string;
