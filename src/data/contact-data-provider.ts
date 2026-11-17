@@ -4,6 +4,11 @@ import { API_URL } from "../api/api";
 const url = `${API_URL}/api/contact`;
 const httpClient = fetchUtils.fetchJson;
 
+type ContactMessage = {
+  message_id: string | number;
+  [key: string]: unknown;
+};
+
 export const contactDataProvider = {
   getList: async (params = { pagination: { page: 1, perPage: 10 }, sort: { field: "id", order: "ASC" }, filter: {} }) => {
     const { pagination } = params;
@@ -24,7 +29,7 @@ export const contactDataProvider = {
     const paginatedData = json.slice(start, end);
 
     return {
-        data: paginatedData.map((message: any) => ({
+        data: paginatedData.map((message: ContactMessage) => ({
             id: message.message_id,
             ...message,
         })),
@@ -34,11 +39,11 @@ export const contactDataProvider = {
 
 
 
-  getOne: async (params: any) => {
+  getOne: async (params: { id: string | number }) => {
     const { json } = await httpClient(`${url}/${params.id}`);
 
     return {
-      data: json.map((message: any) => ({
+      data: json.map((message: ContactMessage) => ({
         id: message.message_id,
         ...message,
       })),
@@ -46,7 +51,7 @@ export const contactDataProvider = {
     };
   },
 
-  delete: async (params: any) => {
+  delete: async (params: { id: string | number }) => {
     const { json } = await httpClient(`${url}/${params.id}`, {
       method: "DELETE",
     });
