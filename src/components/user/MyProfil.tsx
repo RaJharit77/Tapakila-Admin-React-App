@@ -1,7 +1,11 @@
 import { Avatar, Box, Divider, Stack, Typography } from "@mui/material";
 import { DateField, TextField } from "react-admin";
 
-export default function MyProfil({ record }: { record: any }) {
+export default function MyProfil({
+  record,
+}: {
+  record: { user_image?: string };
+}) {
   return (
     <Box
       sx={{

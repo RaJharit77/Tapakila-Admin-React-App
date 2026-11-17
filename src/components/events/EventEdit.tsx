@@ -1,10 +1,21 @@
-import { Edit, SimpleForm, TextInput, DateTimeInput, required, useRecordContext, TopToolbar, ShowButton, useInput, NumberInput } from 'react-admin';
+import {
+    Edit,
+    SimpleForm,
+    TextInput,
+    DateTimeInput,
+    required,
+    useRecordContext,
+    TopToolbar,
+    ShowButton,
+    NumberInput
+} from 'react-admin';
 import { Box } from '@mui/material';
 import CloudinaryUpload from './ImageInput';
 
 const EventTitle = () => {
     const record = useRecordContext();
-    return <span>Modifier {record?.event_name || "l'événement"}</span>;
+    if (!record) return <span>Modifier l&apos;événement</span>;
+    return <span>Modifier {record.event_name}</span>;
 };
 
 const EventActions = () => (
@@ -13,11 +24,9 @@ const EventActions = () => (
     </TopToolbar>
 );
 
-
-
 export const EventEdit = () => {
     return (
-        <Edit 
+        <Edit
             title={<EventTitle />}
             actions={<EventActions />}
             mutationMode="pessimistic"
@@ -32,7 +41,6 @@ export const EventEdit = () => {
                         }
                     }}
                 >
-                    {/* Nom de l'événement (sur 3 colonnes) */}
                     <Box sx={{ gridColumn: { xs: '1', sm: '1 / span 3' } }}>
                         <TextInput
                             source="event_name"
@@ -43,7 +51,6 @@ export const EventEdit = () => {
                         />
                     </Box>
 
-                    {/* Trois champs en ligne */}
                     <DateTimeInput
                         source="event_date"
                         label="Date et heure"
@@ -62,7 +69,6 @@ export const EventEdit = () => {
                         validate={[required()]}
                     />
 
-                    {/* Deux champs en ligne */}
                     <TextInput
                         source="event_organizer"
                         label="Organisateur"
@@ -85,7 +91,6 @@ export const EventEdit = () => {
                         validate={[required()]}
                     />
 
-                    {/* Informations supplémentaires (sur 3 colonnes) */}
                     <Box sx={{ gridColumn: { xs: '1', sm: '1 / span 3' } }}>
                         <TextInput
                             source="additional_info"
@@ -96,7 +101,6 @@ export const EventEdit = () => {
                         />
                     </Box>
 
-                    {/* Upload d'image (sur 3 colonnes) */}
                     <Box sx={{ gridColumn: { xs: '1', sm: '1 / span 3' } }}>
                         <CloudinaryUpload source="event_image" />
                     </Box>
@@ -105,5 +109,3 @@ export const EventEdit = () => {
         </Edit>
     );
 };
-
-

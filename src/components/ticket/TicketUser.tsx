@@ -9,9 +9,17 @@ import {
 } from "react-admin";
 import { Avatar, Typography } from "@mui/material";
 
+interface TicketRecord {
+  ticket_id: string | number;
+  ticket_type: string;
+  ticket_status: string;
+  ticket_price: number;
+  event_id: string | number;
+}
+
 const CustomEmpty = () => (
   <Typography sx={{ fontFamily: "Poppins", padding: "20px 0", color: "red" }}>
-    Cette utilisateur n'a pas encore acheter des tickets
+    Cette utilisateur n&apos;a pas encore acheter des tickets
   </Typography>
 );
 
@@ -95,8 +103,8 @@ export default function TicketUser() {
         />
         <FunctionField
           label="Type"
-          render={(record: any) => (
-            <TypeTicket ticketType={record.ticket_type} />
+          render={(record: TicketRecord) => (
+            <TypeTicket ticketType={record.ticket_type ?? ""} />
           )}
         />
         <ChipField
@@ -109,7 +117,7 @@ export default function TicketUser() {
           label="Prix (Ar)"
           sx={{ fontFamily: "Poppins" }}
         />
-        <FunctionField label={"Evenement"} render={(record: any) => (        
+        <FunctionField label={"Evenement"} render={(record: TicketRecord) => (
           <ReferenceField
           reference="events"
           source="event_id"

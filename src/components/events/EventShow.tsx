@@ -9,7 +9,6 @@ import {
     DateField,
     TextField,
     Datagrid,
-    ChipField,
     NumberField,
     Pagination,
     ListPaginationContext
@@ -30,21 +29,12 @@ import {
     Paper,
     Grid,
     Container,
-    Stack,
-    Info,
-    Add,
-    Delete
+    Chip // ✅ Ajout de Chip pour le statut personnalisé
 } from '@mui/material';
 import { useState } from 'react';
 import { eventsDataProvider, TicketType } from '../../data/events-data-provider';
 import ConfirmationNumber from '@mui/icons-material/ConfirmationNumber';
 import { LocationOn, CalendarToday, Person, Category } from "@mui/icons-material";
-
-const EventTitle = () => {
-    const record = useRecordContext();
-    if (!record) return null;
-    return <span>{record.event_name}</span>;
-};
 
 const EventActions = () => (
     <TopToolbar>
@@ -74,12 +64,28 @@ const TicketRatioField = () => {
     );
 };
 
+// ✅ Composant personnalisé pour afficher le statut avec la bonne couleur
+const StatusChip = () => {
+    const record = useRecordContext();
+    if (!record) return null;
+
+    let color = '#9e9e9e';
+    if (record.ticket_status === 'SOLD') color = '#4caf50';
+    if (record.ticket_status === 'AVAILABLE') color = '#2196f3';
+    if (record.ticket_status === 'RESERVED') color = '#ff9800';
+
+    return <Chip label={record.ticket_status} sx={{ backgroundColor: color, color: '#fff' }} size="small" />;
+};
+
 const TicketsTab = () => {
     const record = useRecordContext();
     const [page, setPage] = useState(1);
     const [perPage, setPerPage] = useState(10);
     const [typeFilter, setTypeFilter] = useState<string>('');
     const [statusFilter, setStatusFilter] = useState<string>('');
+
+    // ✅ Sécurité si record est undefined
+    if (!record) return null;
 
     const startIndex = (page - 1) * perPage;
     const endIndex = startIndex + perPage;
@@ -104,10 +110,7 @@ const TicketsTab = () => {
                     <InputLabel>Type de ticket</InputLabel>
                     <Select
                         value={typeFilter}
-                        onChange={(e) => {
-                            setTypeFilter(e.target.value);
-                            setPage(1);
-                        }}
+                        onChange={(e) => { setTypeFilter(e.target.value); setPage(1); }}
                         label="Type de ticket"
                     >
                         <MenuItem value="">Tous les types</MenuItem>
@@ -121,10 +124,7 @@ const TicketsTab = () => {
                     <InputLabel>Statut</InputLabel>
                     <Select
                         value={statusFilter}
-                        onChange={(e) => {
-                            setStatusFilter(e.target.value);
-                            setPage(1);
-                        }}
+                        onChange={(e) => { setStatusFilter(e.target.value); setPage(1); }}
                         label="Statut"
                     >
                         <MenuItem value="">Tous les statuts</MenuItem>
@@ -135,58 +135,42 @@ const TicketsTab = () => {
                 </FormControl>
             </Box>
 
-            <ListPaginationContext value={{
+            <ListPaginationContext.Provider value={{
                 page,
                 perPage,
                 setPage,
                 setPerPage,
-                total: totalTickets
+                total: totalTickets,
+                isPending: false,
+                resource: 'tickets'
             }}>
                 <Box>
                     <Datagrid
                         bulkActionButtons={false}
                         data={paginatedTickets}
                         rowClick={false}
-                        currentSort={{ field: 'ticket_id', order: 'ASC' }}
                     >
                         <TextField source="ticket_id" label="ID" />
-                        <ChipField source="ticket_type" label="Type" />
+                        <TextField source="ticket_type" label="Type" />
                         <NumberField
                             source="ticket_price"
                             label="Prix (Ar)"
                             options={{ style: 'currency', currency: 'MGA' }}
                         />
-                        <ChipField
-                            source="ticket_status"
-                            label="Statut"
-                            sx={{
-                                '& .MuiChip-root': {
-                                    backgroundColor: record => {
-                                        switch (record.ticket_status) {
-                                            case 'SOLD': return '#4caf50';
-                                            case 'AVAILABLE': return '#2196f3';
-                                            case 'RESERVED': return '#ff9800';
-                                            default: return '#9e9e9e';
-                                        }
-                                    },
-                                    color: '#fff'
-                                }
-                            }}
-                        />
+                        {/* ✅ Utilisation du composant StatusChip corrigé */}
+                        <StatusChip />
                         <DateField
                             source="ticket_creation_date"
                             label="Date création"
                             showTime
                             locales="fr-FR"
                         />
-
-
                         <TextField source="user_id" label="Acheté par" />
                     </Datagrid>
 
                     <Pagination rowsPerPageOptions={[10, 25, 50, 100]} />
                 </Box>
-            </ListPaginationContext>
+            </ListPaginationContext.Provider>
 
             {(!record.tickets || record.tickets.length === 0) && (
                 <Typography variant="body1" sx={{ mt: 2 }}>
@@ -213,7 +197,6 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Validation des champs
         if (!ticketNumber || parseInt(ticketNumber) <= 0) {
             notify('Le nombre de tickets doit être supérieur à 0', { type: 'error' });
             return;
@@ -225,7 +208,6 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
         }
 
         try {
-            console.log('EventId reçu:', eventId); // Debug
             if (!eventId) {
                 notify('L\'ID de l\'événement est obligatoire', { type: 'error' });
                 return;
@@ -236,13 +218,11 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
                 ticket_type: ticketType,
                 ticketPrice: parseFloat(ticketPrice)
             };
-            console.log('Params envoyés:', params); // Debug
 
             await eventsDataProvider.createTickets(params);
             notify('Tickets créés avec succès', { type: 'success' });
             onSuccess();
             onClose();
-            // Reset form
             setTicketNumber('');
             setTicketType(TicketType.STANDARD);
             setTicketPrice('');
@@ -253,7 +233,6 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
     };
 
     return (
-
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>Créer des tickets</DialogTitle>
             <DialogContent>
@@ -336,14 +315,14 @@ const DeleteTicketDialog = ({ open, onClose, eventId, onSuccess }: DeleteTicketD
                 ...(ticketType && { ticket_type: ticketType as TicketType })
             };
 
-            const result = await eventsDataProvider.deleteTickets(params);
+            // ✅ Correction : Suppression de "const result =", car non utilisé
+            await eventsDataProvider.deleteTickets(params);
             notify('Tickets supprimés avec succès', { type: 'success' });
             onSuccess();
             onClose();
-            // Reset form
             setTicketNumber('');
             setTicketType('');
-        } catch (error: any) {
+        } catch (error: any) { // eslint-disable-line @typescript-eslint/no-explicit-any
             console.error('Error deleting tickets:', error);
             notify(error.message || 'Erreur lors de la suppression des tickets', { type: 'error' });
         }
@@ -399,17 +378,11 @@ const EventContent = () => {
     const record = useRecordContext();
     const [createDialogOpen, setCreateDialogOpen] = useState(false);
     const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
-    const notify = useNotify();
     const refresh = useRefresh();
-
-    const handleSuccess = () => {
-        refresh();
-    };
 
     if (!record) return null;
 
     const isPastEvent = new Date(record.event_date) < new Date();
-    console.log('Record:', record); // Debug pour voir la structure complète du record
 
     const formattedDate = record.event_date ? new Date(record.event_date).toLocaleDateString('fr-FR', {
         weekday: 'long',
@@ -426,7 +399,6 @@ const EventContent = () => {
                 <Container maxWidth="lg">
                     <Paper elevation={3} sx={{ p: 3, my: 2 }}>
                         <Grid container spacing={4}>
-                            {/* Image Section */}
                             <Grid item xs={12} md={6} sx={{ height: '100%' }}>
                                 <Box sx={{
                                     position: 'sticky',
@@ -439,16 +411,11 @@ const EventContent = () => {
                                     <img
                                         src={record.event_image || '/placeholder-image.jpg'}
                                         alt={record.event_name}
-                                        style={{
-                                            width: '100%',
-                                            height: '100%',
-                                            objectFit: 'cover'
-                                        }}
+                                        style={{ width: '100%', height: '100%', objectFit: 'cover' }}
                                     />
                                 </Box>
                             </Grid>
 
-                            {/* Details Section */}
                             <Grid item xs={12} md={6}>
                                 <Typography variant="h4" gutterBottom>
                                     {record.event_name}
@@ -458,9 +425,7 @@ const EventContent = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <CalendarToday sx={{ color: 'primary.main' }} />
                                         <Box>
-                                            <Typography variant="subtitle2" color="textSecondary">
-                                                Date
-                                            </Typography>
+                                            <Typography variant="subtitle2" color="textSecondary">Date</Typography>
                                             <Typography>{formattedDate}</Typography>
                                         </Box>
                                     </Box>
@@ -468,9 +433,7 @@ const EventContent = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <LocationOn sx={{ color: 'primary.main' }} />
                                         <Box>
-                                            <Typography variant="subtitle2" color="textSecondary">
-                                                Lieu
-                                            </Typography>
+                                            <Typography variant="subtitle2" color="textSecondary">Lieu</Typography>
                                             <Typography>{record.event_place}</Typography>
                                         </Box>
                                     </Box>
@@ -478,17 +441,13 @@ const EventContent = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Category sx={{ color: 'primary.main' }} />
                                         <Box>
-                                            <Typography variant="subtitle2" color="textSecondary">
-                                                Catégorie
-                                            </Typography>
+                                            <Typography variant="subtitle2" color="textSecondary">Catégorie</Typography>
                                             <Typography>{record.event_category}</Typography>
                                         </Box>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Person sx={{ color: 'primary.main' }} />
-                                        <Typography variant="subtitle2" color="textSecondary">
-                                            Limite par utilisateur
-                                        </Typography>
+                                        <Typography variant="subtitle2" color="textSecondary">Limite par utilisateur</Typography>
                                         <TextField
                                             source="event_tickets_limit_by_user_by_type"
                                             label="Nombre de billets par utilisateur par type"
@@ -498,9 +457,7 @@ const EventContent = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Person sx={{ color: 'primary.main' }} />
                                         <Box>
-                                            <Typography variant="subtitle2" color="textSecondary">
-                                                Organisateur
-                                            </Typography>
+                                            <Typography variant="subtitle2" color="textSecondary">Organisateur</Typography>
                                             <Typography>{record.event_organizer}</Typography>
                                         </Box>
                                     </Box>
@@ -508,9 +465,7 @@ const EventContent = () => {
                                     <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2 }}>
                                         <ConfirmationNumber sx={{ color: 'primary.main', mt: 0.5 }} />
                                         <Box>
-                                            <Typography variant="subtitle2" color="textSecondary">
-                                                Billets
-                                            </Typography>
+                                            <Typography variant="subtitle2" color="textSecondary">Billets</Typography>
                                             <TicketRatioField />
 
                                             <Box sx={{ mt: 1, display: 'flex', gap: 2 }}>
@@ -548,14 +503,14 @@ const EventContent = () => {
                     <CreateTicketDialog
                         open={createDialogOpen}
                         onClose={() => setCreateDialogOpen(false)}
-                        eventId={record.event_id} // Utilisation de event_id au lieu de id
-                        onSuccess={handleSuccess}
+                        eventId={record.event_id}
+                        onSuccess={refresh}
                     />
                     <DeleteTicketDialog
                         open={deleteDialogOpen}
                         onClose={() => setDeleteDialogOpen(false)}
-                        eventId={record.event_id} // Utilisation de event_id au lieu de id
-                        onSuccess={handleSuccess}
+                        eventId={record.event_id}
+                        onSuccess={refresh}
                     />
                 </Container>
             </TabbedShowLayout.Tab>
