@@ -5,7 +5,7 @@ import {
   DeleteButton,
   List,
   Pagination,
- RichTextField,
+  RichTextField,
   TextField,
 } from "react-admin";
 

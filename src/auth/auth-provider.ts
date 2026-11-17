@@ -1,4 +1,5 @@
 import { AuthProvider } from "react-admin";
+import { API_URL } from "../api/api";
 
 export const authProvider: AuthProvider = {
   checkAuth: async function (): Promise<void> {
@@ -7,7 +8,7 @@ export const authProvider: AuthProvider = {
       throw new Error("Veuiller connecter");
     }
 
-    const response = await fetch("http://localhost:3000/api/admin", {
+    const response = await fetch(`${API_URL}/api/admin`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -18,8 +19,11 @@ export const authProvider: AuthProvider = {
     return response.ok ? Promise.resolve() : Promise.reject();
   },
 
-  checkError: async function (error: any): Promise<void> {
-    const { status } = error;
+  checkError: async function (error: unknown): Promise<void> {
+    const status =
+      typeof error === "object" && error !== null && "status" in error
+        ? error.status
+        : undefined;
 
     if (status === 401 || status === 403) {
       localStorage.removeItem("accessToken");
@@ -28,10 +32,10 @@ export const authProvider: AuthProvider = {
     return Promise.resolve();
   },
 
-  login: async function (params: any): Promise<void> {
+  login: async function (params: { email: string; password: string }): Promise<void> {
     const { email, password } = params;
 
-    const loginResult = await fetch("http://localhost:3000/api/admin", {
+    const loginResult = await fetch(`${API_URL}/api/admin`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ email, password }),

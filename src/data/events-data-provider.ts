@@ -1,5 +1,6 @@
 import { fetchUtils } from "react-admin";
 import stringify from "query-string";
+import { API_URL } from "../api/api";
 
 interface Event {
     event_id: string;
@@ -38,9 +39,9 @@ interface GetTicketsParams {
 
 
 enum TicketType {
-  VIP = "VIP",
-  STANDARD = "STANDARD",
-  EARLY_BIRD = "EARLY_BIRD"
+    VIP = "VIP",
+    STANDARD = "STANDARD",
+    EARLY_BIRD = "EARLY_BIRD"
 }
 
 interface CreateTicketsParams {
@@ -56,73 +57,73 @@ interface DeleteTicketsParams {
     ticket_type?: TicketType;
 }
 
-const apiUrl = "http://localhost:3000/api/events";
-const ticketsApiUrl = "http://localhost:3000/api/tickets";
+const apiUrl = `${API_URL}/api/events`;
+const ticketsApiUrl = `${API_URL}/api/tickets`;
 const httpClient = fetchUtils.fetchJson;
 
 
 const safeDateConvert = (dateString: string | Date | null) => {
-  if (!dateString) return new Date();
-  try {
-    return new Date(dateString);
-  } catch {
-    return new Date();
-  }
+    if (!dateString) return new Date();
+    try {
+        return new Date(dateString);
+    } catch {
+        return new Date();
+    }
 };
 
 const validateEventSchema = (event: any) => {
-  if (!event.event_id) {
-    throw new Error('Invalid event data: missing event_id');
-  }
-  return true;
+    if (!event.event_id) {
+        throw new Error('Invalid event data: missing event_id');
+    }
+    return true;
 };
 
 
 const convertResponseDates = (event: any) => {
-  try {
-    validateEventSchema(event);
-    return {
-      id: event.event_id,
-      ...event,
-      event_date: safeDateConvert(event.event_date),
-      event_creation_date: safeDateConvert(event.event_creation_date),
-    };
-  } catch (error) {
-    console.error('Data conversion error:', error);
-    throw error;
-  }
+    try {
+        validateEventSchema(event);
+        return {
+            id: event.event_id,
+            ...event,
+            event_date: safeDateConvert(event.event_date),
+            event_creation_date: safeDateConvert(event.event_creation_date),
+        };
+    } catch (error) {
+        console.error('Data conversion error:', error);
+        throw error;
+    }
 };
 
 
 const prepareRequestData = (data: any) => {
-  try {
-    const { id, ...requestData } = data;
+    try {
+        const { id, ...requestData } = data;
 
-    if (!data.event_name) {
-      throw new Error('Event name is required');
+        if (!data.event_name) {
+            throw new Error('Event name is required');
+        }
+
+        return {
+            ...requestData,
+            event_id: id || `E${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
+            event_date: safeDateConvert(data.event_date).toISOString(),
+            event_creation_date: data.event_creation_date
+                ? safeDateConvert(data.event_creation_date).toISOString()
+                : new Date().toISOString(),
+        };
+    } catch (error) {
+        console.error('Request preparation error:', error);
+        throw error;
     }
-
-    return {
-      ...requestData,
-      event_id: id || `E${Math.random().toString(36).substring(2, 10).toUpperCase()}`,
-      event_date: safeDateConvert(data.event_date).toISOString(),
-      event_creation_date: data.event_creation_date
-        ? safeDateConvert(data.event_creation_date).toISOString()
-        : new Date().toISOString(),
-    };
-  } catch (error) {
-    console.error('Request preparation error:', error);
-    throw error;
-  }
 };
 
 const handleApiError = (error: any) => {
-  console.error('API Error:', error);
-  throw new Error(
-    error.body?.message ||
-    error.message ||
-    'Server communication failed'
-  );
+    console.error('API Error:', error);
+    throw new Error(
+        error.body?.message ||
+        error.message ||
+        'Server communication failed'
+    );
 };
 
 const handleError = (error: any, message: string) => {
@@ -149,7 +150,7 @@ const eventsDataProvider = {
     getPaginatedTickets: async (params: GetPaginatedTicketsParams) => {
         try {
             const { eventId, page, perPage, typeFilter, statusFilter } = params;
-            
+
             // Construire l'URL avec les paramètres de pagination
             const queryParams = new URLSearchParams({
                 idEvent: eventId,
@@ -158,10 +159,10 @@ const eventsDataProvider = {
                 ...(typeFilter && { type: typeFilter }),
                 ...(statusFilter && { status: statusFilter })
             });
-            
+
             // Appeler l'API avec les paramètres de pagination
             const { json } = await httpClient(`${ticketsApiUrl}?${queryParams}`);
-            
+
             return {
                 data: json.tickets || [],
                 total: json.total || 0
@@ -200,7 +201,7 @@ const eventsDataProvider = {
         try {
             const { json } = await httpClient(`${apiUrl}?${stringify(params.filter)}`);
             const processedEvents = await Promise.all(json.map(eventsDataProvider.processEventData));
-            
+
             return {
                 data: processedEvents,
                 total: json.length,
@@ -249,7 +250,7 @@ const eventsDataProvider = {
 
     create: async (_resource: string, params: { data: any }) => {
         try {
-           
+
             const eventDate = new Date(params.data.event_date);
             if (isNaN(eventDate.getTime())) {
                 throw new Error('Date invalide');
@@ -273,7 +274,7 @@ const eventsDataProvider = {
                 method: 'POST',
                 body: JSON.stringify(eventData),
             });
-            
+
             const processedEvent = await eventsDataProvider.processEventData(json);
             return { data: processedEvent };
         } catch (error) {
