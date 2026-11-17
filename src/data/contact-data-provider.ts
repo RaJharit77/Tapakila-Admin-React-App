@@ -1,6 +1,7 @@
 import { fetchUtils } from "react-admin";
+import { API_URL } from "../api/api";
 
-const url = "http://localhost:3000/api/contact";
+const url = `${API_URL}/api/contact`;
 const httpClient = fetchUtils.fetchJson;
 
 export const contactDataProvider = {

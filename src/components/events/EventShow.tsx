@@ -64,7 +64,7 @@ interface Ticket {
 const TicketRatioField = () => {
     const record = useRecordContext();
     if (!record) return null;
-    
+
     return (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             <Typography variant="body1">
@@ -94,108 +94,108 @@ const TicketsTab = () => {
     const totalTickets = filteredTickets.length;
 
     return (
-      <Box sx={{ mt: 3 }}>
-        <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
-          Billets ({totalTickets})
-        </Typography>
+        <Box sx={{ mt: 3 }}>
+            <Typography variant="h4" gutterBottom sx={{ mb: 3 }}>
+                Billets ({totalTickets})
+            </Typography>
 
-        <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
-          <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Type de ticket</InputLabel>
-            <Select
-              value={typeFilter}
-              onChange={(e) => {
-                setTypeFilter(e.target.value);
-                setPage(1);
-              }}
-              label="Type de ticket"
-            >
-              <MenuItem value="">Tous les types</MenuItem>
-              <MenuItem value={TicketType.STANDARD}>Standard</MenuItem>
-              <MenuItem value={TicketType.VIP}>VIP</MenuItem>
-              <MenuItem value={TicketType.EARLY_BIRD}>Early Bird</MenuItem>
-            </Select>
-          </FormControl>
+            <Box sx={{ mb: 3, display: 'flex', gap: 2 }}>
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Type de ticket</InputLabel>
+                    <Select
+                        value={typeFilter}
+                        onChange={(e) => {
+                            setTypeFilter(e.target.value);
+                            setPage(1);
+                        }}
+                        label="Type de ticket"
+                    >
+                        <MenuItem value="">Tous les types</MenuItem>
+                        <MenuItem value={TicketType.STANDARD}>Standard</MenuItem>
+                        <MenuItem value={TicketType.VIP}>VIP</MenuItem>
+                        <MenuItem value={TicketType.EARLY_BIRD}>Early Bird</MenuItem>
+                    </Select>
+                </FormControl>
 
-          <FormControl sx={{ minWidth: 200 }}>
-            <InputLabel>Statut</InputLabel>
-            <Select
-              value={statusFilter}
-              onChange={(e) => {
-                setStatusFilter(e.target.value);
-                setPage(1);
-              }}
-              label="Statut"
-            >
-              <MenuItem value="">Tous les statuts</MenuItem>
-              <MenuItem value="AVAILABLE">Disponible</MenuItem>
-              <MenuItem value="SOLD">Vendu</MenuItem>
-              <MenuItem value="RESERVED">Réservé</MenuItem>
-            </Select>
-          </FormControl>
+                <FormControl sx={{ minWidth: 200 }}>
+                    <InputLabel>Statut</InputLabel>
+                    <Select
+                        value={statusFilter}
+                        onChange={(e) => {
+                            setStatusFilter(e.target.value);
+                            setPage(1);
+                        }}
+                        label="Statut"
+                    >
+                        <MenuItem value="">Tous les statuts</MenuItem>
+                        <MenuItem value="AVAILABLE">Disponible</MenuItem>
+                        <MenuItem value="SOLD">Vendu</MenuItem>
+                        <MenuItem value="RESERVED">Réservé</MenuItem>
+                    </Select>
+                </FormControl>
+            </Box>
+
+            <ListPaginationContext value={{
+                page,
+                perPage,
+                setPage,
+                setPerPage,
+                total: totalTickets
+            }}>
+                <Box>
+                    <Datagrid
+                        bulkActionButtons={false}
+                        data={paginatedTickets}
+                        rowClick={false}
+                        currentSort={{ field: 'ticket_id', order: 'ASC' }}
+                    >
+                        <TextField source="ticket_id" label="ID" />
+                        <ChipField source="ticket_type" label="Type" />
+                        <NumberField
+                            source="ticket_price"
+                            label="Prix (Ar)"
+                            options={{ style: 'currency', currency: 'MGA' }}
+                        />
+                        <ChipField
+                            source="ticket_status"
+                            label="Statut"
+                            sx={{
+                                '& .MuiChip-root': {
+                                    backgroundColor: record => {
+                                        switch (record.ticket_status) {
+                                            case 'SOLD': return '#4caf50';
+                                            case 'AVAILABLE': return '#2196f3';
+                                            case 'RESERVED': return '#ff9800';
+                                            default: return '#9e9e9e';
+                                        }
+                                    },
+                                    color: '#fff'
+                                }
+                            }}
+                        />
+                        <DateField
+                            source="ticket_creation_date"
+                            label="Date création"
+                            showTime
+                            locales="fr-FR"
+                        />
+
+
+                        <TextField source="user_id" label="Acheté par" />
+                    </Datagrid>
+
+                    <Pagination rowsPerPageOptions={[10, 25, 50, 100]} />
+                </Box>
+            </ListPaginationContext>
+
+            {(!record.tickets || record.tickets.length === 0) && (
+                <Typography variant="body1" sx={{ mt: 2 }}>
+                    Aucun billet disponible pour cet événement
+                </Typography>
+            )}
         </Box>
-
-        <ListPaginationContext value={{ 
-          page, 
-          perPage, 
-          setPage, 
-          setPerPage, 
-          total: totalTickets 
-        }}>
-          <Box>
-            <Datagrid 
-              bulkActionButtons={false}
-              data={paginatedTickets}
-              rowClick={false}
-              currentSort={{ field: 'ticket_id', order: 'ASC' }}
-            >
-              <TextField source="ticket_id" label="ID" />
-              <ChipField source="ticket_type" label="Type" />
-              <NumberField
-                source="ticket_price"
-                label="Prix (Ar)"
-                options={{ style: 'currency', currency: 'MGA' }}
-              />
-              <ChipField
-                source="ticket_status"
-                label="Statut"
-                sx={{
-                  '& .MuiChip-root': {
-                    backgroundColor: record => {
-                      switch(record.ticket_status) {
-                        case 'SOLD': return '#4caf50';
-                        case 'AVAILABLE': return '#2196f3';
-                        case 'RESERVED': return '#ff9800';
-                        default: return '#9e9e9e';
-                      }
-                    },
-                    color: '#fff'
-                  }
-                }}
-              />
-              <DateField
-            source="ticket_creation_date"
-            label="Date création"
-            showTime
-            locales="fr-FR"
-                />
-            
-    
-             <TextField source="user_id" label="Acheté par" />
-            </Datagrid>
-            
-            <Pagination rowsPerPageOptions={[10, 25, 50, 100]} />
-          </Box>
-        </ListPaginationContext>
-
-        {(!record.tickets || record.tickets.length === 0) && (
-          <Typography variant="body1" sx={{ mt: 2 }}>
-            Aucun billet disponible pour cet événement
-          </Typography>
-        )}
-      </Box>
     );
-  };
+};
 
 interface CreateTicketDialogProps {
     open: boolean;
@@ -212,7 +212,7 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         // Validation des champs
         if (!ticketNumber || parseInt(ticketNumber) <= 0) {
             notify('Le nombre de tickets doit être supérieur à 0', { type: 'error' });
@@ -237,7 +237,7 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
                 ticketPrice: parseFloat(ticketPrice)
             };
             console.log('Params envoyés:', params); // Debug
-            
+
             await eventsDataProvider.createTickets(params);
             notify('Tickets créés avec succès', { type: 'success' });
             onSuccess();
@@ -253,7 +253,7 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
     };
 
     return (
-        
+
         <Dialog open={open} onClose={onClose} maxWidth="sm" fullWidth>
             <DialogTitle>Créer des tickets</DialogTitle>
             <DialogContent>
@@ -296,9 +296,9 @@ const CreateTicketDialog = ({ open, onClose, eventId, onSuccess }: CreateTicketD
             </DialogContent>
             <DialogActions>
                 <MuiButton onClick={onClose}>Annuler</MuiButton>
-                <MuiButton 
-                    onClick={handleSubmit} 
-                    variant="contained" 
+                <MuiButton
+                    onClick={handleSubmit}
+                    variant="contained"
                     color="primary"
                     disabled={!ticketNumber || !ticketPrice || parseInt(ticketNumber) <= 0 || parseFloat(ticketPrice) < 0}
                 >
@@ -323,7 +323,7 @@ const DeleteTicketDialog = ({ open, onClose, eventId, onSuccess }: DeleteTicketD
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
-        
+
         if (!ticketNumber || parseInt(ticketNumber) <= 0) {
             notify('Le nombre de tickets doit être supérieur à 0', { type: 'error' });
             return;
@@ -335,7 +335,7 @@ const DeleteTicketDialog = ({ open, onClose, eventId, onSuccess }: DeleteTicketD
                 event_id: eventId,
                 ...(ticketType && { ticket_type: ticketType as TicketType })
             };
-            
+
             const result = await eventsDataProvider.deleteTickets(params);
             notify('Tickets supprimés avec succès', { type: 'success' });
             onSuccess();
@@ -382,9 +382,9 @@ const DeleteTicketDialog = ({ open, onClose, eventId, onSuccess }: DeleteTicketD
             </DialogContent>
             <DialogActions>
                 <MuiButton onClick={onClose}>Annuler</MuiButton>
-                <MuiButton 
-                    onClick={handleSubmit} 
-                    variant="contained" 
+                <MuiButton
+                    onClick={handleSubmit}
+                    variant="contained"
                     color="error"
                     disabled={!ticketNumber || parseInt(ticketNumber) <= 0}
                 >
@@ -428,7 +428,7 @@ const EventContent = () => {
                         <Grid container spacing={4}>
                             {/* Image Section */}
                             <Grid item xs={12} md={6} sx={{ height: '100%' }}>
-                                <Box sx={{ 
+                                <Box sx={{
                                     position: 'sticky',
                                     top: 16,
                                     height: '100%',
@@ -436,12 +436,12 @@ const EventContent = () => {
                                     overflow: 'hidden',
                                     borderRadius: 2
                                 }}>
-                                    <img 
-                                        src={record.event_image || '/placeholder-image.jpg'} 
+                                    <img
+                                        src={record.event_image || '/placeholder-image.jpg'}
                                         alt={record.event_name}
-                                        style={{ 
-                                            width: '100%', 
-                                            height: '100%', 
+                                        style={{
+                                            width: '100%',
+                                            height: '100%',
                                             objectFit: 'cover'
                                         }}
                                     />
@@ -485,15 +485,15 @@ const EventContent = () => {
                                         </Box>
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                                                <Person sx={{ color: 'primary.main' }} />
-                                                <Typography variant="subtitle2" color="textSecondary">
-                                                    Limite par utilisateur
-                                                </Typography>
-                                                <TextField 
-                                                    source="event_tickets_limit_by_user_by_type" 
-                                                    label="Nombre de billets par utilisateur par type"
-                                                    sx={{ minWidth: '200px' }}
-                                                />
+                                        <Person sx={{ color: 'primary.main' }} />
+                                        <Typography variant="subtitle2" color="textSecondary">
+                                            Limite par utilisateur
+                                        </Typography>
+                                        <TextField
+                                            source="event_tickets_limit_by_user_by_type"
+                                            label="Nombre de billets par utilisateur par type"
+                                            sx={{ minWidth: '200px' }}
+                                        />
                                     </Box>
                                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                                         <Person sx={{ color: 'primary.main' }} />
@@ -512,7 +512,7 @@ const EventContent = () => {
                                                 Billets
                                             </Typography>
                                             <TicketRatioField />
-                                           
+
                                             <Box sx={{ mt: 1, display: 'flex', gap: 2 }}>
                                                 <MuiButton
                                                     variant="contained"

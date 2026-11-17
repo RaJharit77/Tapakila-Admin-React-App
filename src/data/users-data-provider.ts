@@ -1,14 +1,15 @@
 import { fetchUtils } from "react-admin";
+import { API_URL } from "../api/api";
 
-const url = "http://localhost:3000/api/users";
+const url = `${API_URL}/api/users`;
 const httpClient = fetchUtils.fetchJson;
 
 
 export const userDataProvider = {
   getList: async (params: any) => {
- 
+
     const { json } = await httpClient(`${url}`);
-  
+
     return {
       data: json.map((user: any) => ({ id: user.user_id, ...user })),
       total: json.lenght,
