@@ -1,7 +1,7 @@
 import { EmailRounded, Login, PasswordRounded } from "@mui/icons-material";
 import { Box, Card, CircularProgress, TextField } from "@mui/material";
 import Button from "@mui/material/Button";
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { useLogin, useNotify } from "react-admin";
 import { LoginStyle } from "../style/LoginStyle";
 
@@ -12,7 +12,7 @@ export const LoginPage = () => {
   const login = useLogin();
   const notify = useNotify();
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
 
