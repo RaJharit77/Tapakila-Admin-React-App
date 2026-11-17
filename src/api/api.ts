@@ -4,5 +4,5 @@ declare const process: {
 
 export const API_URL =
     typeof process !== "undefined" && process.env
-        ? process.env.API_URL || "http://localhost:3000"
-        : "http://localhost:3000";
+        ? process.env.API_URL || "https://tapakila-app.vercel.app"
+        : "https://tapakila-app.vercel.app";
