@@ -1,17 +1,20 @@
-// components/CloudinaryUpload.js
-import { useState } from 'react';
+import { useState, ChangeEvent } from 'react';
 import { useInput, useNotify } from 'react-admin';
-import { AdvancedImage } from '@cloudinary/react';
-import { Cloudinary } from '@cloudinary/url-gen';
 
-const CloudinaryUpload = ({ source }) => {
+interface CloudinaryUploadProps {
+  source: string;
+}
+
+const CloudinaryUpload = ({ source }: CloudinaryUploadProps) => {
   const notify = useNotify();
   const { field } = useInput({ source });
   const [imageUrl, setImageUrl] = useState('');
-  const cld = new Cloudinary({ cloud: { cloudName: import.meta.env.VITE_CLOUDINARY_CLOUD_NAME } });
 
-  const handleUpload = async (e) => {
-    const file = e.target.files[0];
+  const handleUpload = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+
+    if (!file) return;
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('upload_preset', 'ml_default');
@@ -21,23 +24,30 @@ const CloudinaryUpload = ({ source }) => {
         `https://api.cloudinary.com/v1_1/${import.meta.env.VITE_CLOUDINARY_CLOUD_NAME}/image/upload`,
         { method: 'POST', body: formData }
       );
+
+      if (!response.ok) {
+        throw new Error('Erreur lors de l\'upload');
+      }
+
       const data = await response.json();
       setImageUrl(data.secure_url);
       field.onChange(data.secure_url);
-      notify('Image uploaded successfully', { type: 'success' });
+      notify('Image uploadée avec succès', { type: 'success' });
     } catch (error) {
-      notify('Upload failed', { type: 'error' });
+      notify('Échec de l\'upload de l\'image', { type: 'error' });
     }
   };
 
   return (
     <div>
-      <input type="file" onChange={handleUpload} />
+      <input type="file" onChange={handleUpload} accept="image/*" />
+
       {imageUrl && (
         <div style={{ marginTop: '10px' }}>
-          <AdvancedImage
-            cldImg={cld.image(imageUrl.split('/').pop().split('.')[0])}
-            width="300"
+          <img
+            src={imageUrl}
+            alt="Aperçu de l'image"
+            style={{ width: '300px', borderRadius: '8px', objectFit: 'cover' }}
           />
         </div>
       )}

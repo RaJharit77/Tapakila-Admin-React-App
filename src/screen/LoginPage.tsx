@@ -1,18 +1,5 @@
-import {
-  EmailRounded,
-  Login,
-  PasswordRounded,
-  Visibility,
-  VisibilityOff
-} from "@mui/icons-material";
-import {
-  Box,
-  Card,
-  CircularProgress,
-  TextField,
-  IconButton,
-  InputAdornment
-} from "@mui/material";
+import { EmailRounded, Login, PasswordRounded, Visibility, VisibilityOff } from "@mui/icons-material";
+import { Box, Card, CircularProgress, TextField, IconButton, InputAdornment } from "@mui/material";
 import Button from "@mui/material/Button";
 import { useState, type FormEvent } from "react";
 import { useLogin, useNotify } from "react-admin";
@@ -22,7 +9,7 @@ export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
-  const [showPassword, setShowPassword] = useState(false); // 👈 Nouvel état pour afficher/masquer
+  const [showPassword, setShowPassword] = useState(false);
   const login = useLogin();
   const notify = useNotify();
 
@@ -32,33 +19,36 @@ export const LoginPage = () => {
 
     try {
       await login({ email, password });
-    } catch (error) {
-      notify("Erreur d'authentification", { type: "warning" });
+    } catch (error: unknown) {
+      const errorMessage =
+        (typeof error === "object" && error !== null && "body" in error &&
+        typeof error.body === "object" && error.body !== null &&
+        "error" in error.body && typeof error.body.error === "string" && error.body.error) ||
+        (error instanceof Error && error.message) ||
+        (typeof error === "object" && error !== null && "message" in error &&
+        typeof error.message === "string" && error.message) ||
+        "Erreur de connexion. Vérifiez vos identifiants.";
+
+      notify(errorMessage, { type: "error", autoHideDuration: 4000 });
     } finally {
       setLoading(false);
     }
   };
 
-  const handleClickShowPassword = () => setShowPassword((show) => !show);
-  const handleMouseDownPassword = (event: React.MouseEvent<HTMLButtonElement>) => {
-    event.preventDefault(); // Empêche le focus de quitter le champ
-  };
-
   return (
     <Box sx={LoginStyle}>
-      <Card>
+      <Card sx={{ p: 4, maxWidth: 400, width: '100%' }}>
         <form onSubmit={handleSubmit}>
-          <h1 style={{ marginBottom: "0.5rem", color: " #0077FF" }}>
-            Se <span style={{ color: " #FFBA08" }}>connecter</span>
+          <h1 style={{ marginBottom: "0.5rem", color: "#0077FF", fontSize: '2rem', fontWeight: 'bold' }}>
+            Se <span style={{ color: "#FFBA08" }}>connecter</span>
           </h1>
-          <p style={{ color: " #fff", marginBottom: "1.5rem" }}>
-            Veuillez entrer votre email et votre mot de passe
+          <p style={{ color: "#fff", marginBottom: "2rem" }}>
+            Veuillez entrer vos identifiants administrateur.
           </p>
 
-          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 3 }}>
             <EmailRounded sx={{ color: "action.active", mr: 1 }} />
             <TextField
-              id="input-with-sx"
               label="Email"
               type="email"
               variant="standard"
@@ -67,65 +57,39 @@ export const LoginPage = () => {
               required
               fullWidth
               sx={{
-                "& .MuiInput-underline:before": {
-                  borderBottom: "2px solid #fff",
-                },
-                "& .MuiInput-underline:after": {
-                  borderBottom: "2px solid #0077FF",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#fff",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: " #0077FF",
-                },
-                "& .MuiInputBase-input": {
-                  color: "#fff", // Assure que le texte tapé est blanc
-                },
+                "& .MuiInput-underline:before": { borderBottom: "2px solid #fff" },
+                "& .MuiInput-underline:after": { borderBottom: "2px solid #0077FF" },
+                "& .MuiInputLabel-root": { color: "#fff" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#0077FF" },
+                "& .MuiInputBase-input": { color: "#fff" },
               }}
             />
           </Box>
 
-          <Box sx={{ display: "flex", alignItems: "center" }}>
+          <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
             <PasswordRounded sx={{ color: "action.active", mr: 1 }} />
             <TextField
-              id="input-with-sx"
               label="Mot de passe"
-              type={showPassword ? "text" : "password"} // 👈 Type dynamique
+              type={showPassword ? "text" : "password"}
               variant="standard"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
               fullWidth
               sx={{
-                "& .MuiInput-underline:before": {
-                  borderBottom: "2px solid #fff",
-                },
-                "& .MuiInput-underline:after": {
-                  borderBottom: "2px solid #FFBA08",
-                },
-                "& .MuiInputLabel-root": {
-                  color: "#fff",
-                },
-                "& .MuiInputLabel-root.Mui-focused": {
-                  color: " #FFBA08",
-                },
-                "& .MuiInputBase-input": {
-                  color: "#fff", // Assure que le texte tapé est blanc
-                },
+                "& .MuiInput-underline:before": { borderBottom: "2px solid #fff" },
+                "& .MuiInput-underline:after": { borderBottom: "2px solid #FFBA08" },
+                "& .MuiInputLabel-root": { color: "#fff" },
+                "& .MuiInputLabel-root.Mui-focused": { color: "#FFBA08" },
+                "& .MuiInputBase-input": { color: "#fff" },
               }}
-              InputProps={{ // 👈 Ajout de l'icône à la fin du champ
+              InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
                     <IconButton
-                      aria-label="toggle password visibility"
-                      onClick={handleClickShowPassword}
-                      onMouseDown={handleMouseDownPassword}
+                      onClick={() => setShowPassword(!showPassword)}
                       edge="end"
-                      sx={{
-                        color: "#fff",
-                        "&:hover": { color: "#FFBA08" }
-                      }}
+                      sx={{ color: "#fff", "&:hover": { color: "#FFBA08" } }}
                     >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
@@ -141,21 +105,12 @@ export const LoginPage = () => {
             variant="contained"
             type="submit"
             sx={{
-              marginTop: "1.5rem",
-              color: " #fff",
-              backgroundColor: " #0077FF",
-              "&:hover": {
-                backgroundColor: " #FFBA08",
-                color: " #fff",
-              },
+              mt: 3, color: "#fff", backgroundColor: "#0077FF",
+              "&:hover": { backgroundColor: "#FFBA08", color: "#fff" },
             }}
             disabled={loading}
           >
-            {loading ? (
-              <CircularProgress size={24} sx={{ color: "white" }} />
-            ) : (
-              "Se connecter"
-            )}
+            {loading ? <CircularProgress size={24} sx={{ color: "white" }} /> : "Se connecter"}
           </Button>
         </form>
       </Card>

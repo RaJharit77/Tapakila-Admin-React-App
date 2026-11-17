@@ -7,7 +7,12 @@ import {
   TextField,
 } from "react-admin";
 
-const AvatarField = ({ record }: { record?: any }) => {
+interface UserRecord {
+  user_image?: string;
+  user_name?: string;
+}
+
+const AvatarField = ({ record }: { record?: UserRecord }) => {
   return (
     <Avatar
       src={record?.user_image}
