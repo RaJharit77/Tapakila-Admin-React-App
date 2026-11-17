@@ -4,8 +4,9 @@ import { API_URL } from "../api/api";
 export const authProvider: AuthProvider = {
   checkAuth: async function (): Promise<void> {
     const token = localStorage.getItem("accessToken");
+
     if (!token) {
-      throw new Error("Veuiller connecter");
+      throw new Error("Veuillez vous connecter");
     }
 
     const response = await fetch(`${API_URL}/api/admin`, {
@@ -16,7 +17,13 @@ export const authProvider: AuthProvider = {
       },
     });
 
-    return response.ok ? Promise.resolve() : Promise.reject();
+    if (!response.ok) {
+      if (response.status === 401 || response.status === 403) {
+        localStorage.removeItem("accessToken");
+      }
+
+      throw new Error("Session invalide ou expirée");
+    }
   },
 
   checkError: async function (error: unknown): Promise<void> {
