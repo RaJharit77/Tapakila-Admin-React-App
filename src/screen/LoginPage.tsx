@@ -5,6 +5,12 @@ import { useState, type FormEvent } from "react";
 import { useLogin, useNotify } from "react-admin";
 import { LoginStyle } from "../style/LoginStyle";
 
+// ✅ Interface pour typer l'erreur de manière sûre
+interface AuthError {
+  body?: { error?: string; message?: string };
+  message?: string;
+}
+
 export const LoginPage = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -20,13 +26,12 @@ export const LoginPage = () => {
     try {
       await login({ email, password });
     } catch (error: unknown) {
+      // ✅ Extraction sécurisée du message d'erreur
+      const err = error as AuthError;
       const errorMessage =
-        (typeof error === "object" && error !== null && "body" in error &&
-        typeof error.body === "object" && error.body !== null &&
-        "error" in error.body && typeof error.body.error === "string" && error.body.error) ||
-        (error instanceof Error && error.message) ||
-        (typeof error === "object" && error !== null && "message" in error &&
-        typeof error.message === "string" && error.message) ||
+        err?.body?.error ||
+        err?.body?.message ||
+        err?.message ||
         "Erreur de connexion. Vérifiez vos identifiants.";
 
       notify(errorMessage, { type: "error", autoHideDuration: 4000 });
