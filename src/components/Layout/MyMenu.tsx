@@ -1,4 +1,4 @@
-import { Event, Message, People } from "@mui/icons-material";
+import { Event, Message, People, AdminPanelSettings } from "@mui/icons-material";
 import { Menu } from "react-admin";
 
 export const MyMenu = () => (
@@ -58,6 +58,20 @@ export const MyMenu = () => (
         fontFamily: "Poppins",
       }}
       leftIcon={<Message />}
+    />
+    <Menu.Item
+      to="/admins"
+      primaryText="Administrateurs"
+      sx={{
+        background: "#0077FF",
+        margin: "20px 0",
+        fontWeight: "bold",
+        border: "2px solid #0077FF",
+        borderRadius: "10px",
+        padding: "10px 10px",
+        fontFamily: "Poppins",
+      }}
+      leftIcon={<AdminPanelSettings />}
     />
   </Menu>
 );
