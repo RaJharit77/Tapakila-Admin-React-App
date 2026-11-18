@@ -24,6 +24,7 @@ import {
 import { eventsDataProvider } from "./events-data-provider";
 import { userDataProvider } from "./users-data-provider";
 import { contactDataProvider } from "./contact-data-provider";
+import { adminDataProvider } from "./admins-data-provider";
 
 interface Event extends RaRecord {
   available_tickets: number;
@@ -66,8 +67,12 @@ const compositeDataProvider: CustomDataProvider = {
     if (resource === "users") {
       return await userDataProvider.getList(resource, params) as GetListResult<RecordType>;
     }
+    if (resource === "admins") {
+      return await adminDataProvider.getList(resource, params) as GetListResult<RecordType>;
+    }
     if (resource === "contact") {
-      return await contactDataProvider.getList() as GetListResult<RecordType>;
+      // ✅ Correction : Remplacement de `any` par `unknown as DataProvider`
+      return await (contactDataProvider as unknown as DataProvider).getList(resource, params) as GetListResult<RecordType>;
     }
     throw new Error(`Unknown resource: ${resource}`);
   },
@@ -81,8 +86,10 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.getOne(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.getOne(resource, params);
+    } else if (resource === "admins") {
+      result = await adminDataProvider.getOne(resource, params);
     } else if (resource === "contact") {
-      result = await (contactDataProvider as unknown as Pick<DataProvider, "getOne">).getOne(resource, params);
+      result = await (contactDataProvider as unknown as DataProvider).getOne(resource, params);
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }
@@ -99,6 +106,9 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.getMany(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.getMany(resource, params);
+    } else if (resource === "admins") {
+      const results = await Promise.all(params.ids.map(id => adminDataProvider.getOne(resource, { id })));
+      result = { data: results.map(r => r.data) };
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }
@@ -129,6 +139,8 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.update(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.update(resource, params);
+    } else if (resource === "admins") {
+      result = await adminDataProvider.update(resource, params);
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }
@@ -160,6 +172,8 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.create(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.create(resource, params);
+    } else if (resource === "admins") {
+      result = await adminDataProvider.create(resource, params);
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }
@@ -176,8 +190,11 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.delete(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.delete(resource, params);
+    } else if (resource === "admins") {
+      result = await adminDataProvider.delete(resource, params);
     } else if (resource === "contact") {
-      result = await (contactDataProvider as unknown as Pick<DataProvider, "delete">).delete(resource, params);
+      // ✅ Correction : Remplacement de `any` par `unknown as DataProvider`
+      result = await (contactDataProvider as unknown as DataProvider).delete(resource, params);
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }
@@ -194,6 +211,8 @@ const compositeDataProvider: CustomDataProvider = {
       result = await eventsDataProvider.deleteMany(resource, params);
     } else if (resource === "users") {
       result = await userDataProvider.deleteMany(resource, params);
+    } else if (resource === "admins") {
+      result = await adminDataProvider.deleteMany(resource, params);
     } else {
       throw new Error(`Unknown resource: ${resource}`);
     }

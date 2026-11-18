@@ -12,6 +12,10 @@ import { compositeDataProvider } from "./data/compositeDataProvider";
 import { Layout } from "./Layout";
 import { UserShow } from "./components/user/UserShow";
 import MessageList from "./components/message/MessageList";
+import { AdminPanelSettings } from "@mui/icons-material";
+import { AdminList } from "./components/admin/AdminList";
+import { AdminCreate } from "./components/admin/AdminCreate";
+import { AdminEdit } from "./components/admin/AdminEdit";
 
 export const App = () => {
   return (
@@ -41,6 +45,14 @@ export const App = () => {
         name="contact"
         list={MessageList}
         icon={Message}
+      />
+
+      <Resource
+        name="admins"
+        list={AdminList}
+        create={AdminCreate}
+        edit={AdminEdit}
+        icon={AdminPanelSettings}
       />
     </Admin>
   );
