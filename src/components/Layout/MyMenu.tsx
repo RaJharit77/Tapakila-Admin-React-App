@@ -22,31 +22,30 @@ const CustomMenuItem = ({
       leftIcon={leftIcon}
       sx={{
         background: isActive ? "#FFBA08" : "#0077FF",
+        color: isActive ? "#14213D" : "#ffffff",
         margin: "10px 0",
         fontWeight: "bold",
         border: isActive ? "2px solid #FFBA08" : "2px solid #0077FF",
         borderRadius: "10px",
         padding: "10px 10px",
+        fontFamily: "Poppins",
         transition: "all 0.3s ease",
-
-        "& .MuiListItemText-primary": {
-          color: isActive ? "#14213D" : "#ffffff",
-          fontFamily: "Poppins",
-          fontWeight: "bold",
-          fontSize: "1rem",
-        },
 
         "& .MuiListItemIcon-root": {
           color: isActive ? "#14213D" : "#ffffff",
         },
 
+        "& .MuiListItemText-primary": {
+          color: isActive ? "#14213D" : "#ffffff",
+        },
+
         "&:hover": {
           background: isActive ? "#FFBA08" : "#005ce6",
-
-          "& .MuiListItemText-primary": {
+          color: isActive ? "#14213D" : "#ffffff",
+          "& .MuiListItemIcon-root": {
             color: isActive ? "#14213D" : "#ffffff",
           },
-          "& .MuiListItemIcon-root": {
+          "& .MuiListItemText-primary": {
             color: isActive ? "#14213D" : "#ffffff",
           },
         },
