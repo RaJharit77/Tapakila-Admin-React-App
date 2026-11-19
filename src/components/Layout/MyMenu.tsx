@@ -15,6 +15,12 @@ const CustomMenuItem = ({
   const location = useLocation();
   const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
 
+  // ✅ Couleur principale (Texte + Icône) : Bleu Nuit sur fond Or (actif), Blanc sur fond Bleu (inactif)
+  const mainColor = isActive ? "#14213D" : "#ffffff";
+  
+  // ✅ Couleur au survol : même couleur mais avec une opacité réduite (teinte diminuée)
+  const hoverColor = isActive ? "rgba(20, 33, 61, 0.6)" : "rgba(255, 255, 255, 0.6)";
+
   return (
     <Menu.Item
       to={to}
@@ -22,31 +28,32 @@ const CustomMenuItem = ({
       leftIcon={leftIcon}
       sx={{
         background: isActive ? "#FFBA08" : "#0077FF",
-        color: isActive ? "#14213D" : "#ffffff",
         margin: "10px 0",
-        fontWeight: "bold",
         border: isActive ? "2px solid #FFBA08" : "2px solid #0077FF",
         borderRadius: "10px",
         padding: "10px 10px",
-        fontFamily: "Poppins",
         transition: "all 0.3s ease",
 
-        "& .MuiListItemIcon-root": {
-          color: isActive ? "#14213D" : "#ffffff",
-        },
-
+        // ✅ Application de la couleur permanente
+        color: mainColor,
         "& .MuiListItemText-primary": {
-          color: isActive ? "#14213D" : "#ffffff",
+          color: mainColor,
+          fontFamily: "Poppins",
+          fontWeight: "bold",
+        },
+        "& .MuiListItemIcon-root": {
+          color: mainColor,
         },
 
+        // ✅ Survol : diminution du teint (opacité)
         "&:hover": {
-          background: isActive ? "#FFBA08" : "#005ce6",
-          color: isActive ? "#14213D" : "#ffffff",
-          "& .MuiListItemIcon-root": {
-            color: isActive ? "#14213D" : "#ffffff",
-          },
+          background: isActive ? "#FFBA08" : "#005ce6", // Le fond s'assombrit légèrement
+          color: hoverColor,
           "& .MuiListItemText-primary": {
-            color: isActive ? "#14213D" : "#ffffff",
+            color: hoverColor,
+          },
+          "& .MuiListItemIcon-root": {
+            color: hoverColor,
           },
         },
       }}
