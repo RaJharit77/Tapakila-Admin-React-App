@@ -15,9 +15,8 @@ const CustomMenuItem = ({
   const location = useLocation();
   const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
 
-  const mainColor = isActive ? "#14213D" : "#ffffff";
-
-  const hoverColor = isActive ? "rgba(20, 33, 61, 0.6)" : "rgba(255, 255, 255, 0.6)";
+  const textColor = isActive ? "#14213D" : "#ffffff";
+  const iconColor = isActive ? "#14213D" : "#ffffff";
 
   return (
     <Menu.Item
@@ -26,30 +25,32 @@ const CustomMenuItem = ({
       leftIcon={leftIcon}
       sx={{
         background: isActive ? "#FFBA08" : "#0077FF",
+        color: textColor,
         margin: "10px 0",
+        fontWeight: "bold",
         border: isActive ? "2px solid #FFBA08" : "2px solid #0077FF",
         borderRadius: "10px",
         padding: "10px 10px",
+        fontFamily: "Poppins",
         transition: "all 0.3s ease",
 
-        color: mainColor,
+        "& .MuiListItemIcon-root": {
+          color: iconColor,
+        },
+
         "& .MuiListItemText-primary": {
-          color: mainColor,
+          color: textColor,
           fontFamily: "Poppins",
           fontWeight: "bold",
-        },
-        "& .MuiListItemIcon-root": {
-          color: mainColor,
         },
 
         "&:hover": {
           background: isActive ? "#FFBA08" : "#005ce6",
-          color: hoverColor,
-          "& .MuiListItemText-primary": {
-            color: hoverColor,
-          },
           "& .MuiListItemIcon-root": {
-            color: hoverColor,
+            color: iconColor,
+          },
+          "& .MuiListItemText-primary": {
+            color: textColor,
           },
         },
       }}
