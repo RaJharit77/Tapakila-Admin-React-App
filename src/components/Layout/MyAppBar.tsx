@@ -2,7 +2,6 @@ import { AppBar, Logout, UserMenu } from "react-admin";
 import MyToolbar from "../../screen/MyToolbar";
 
 export default function MyAppBar() {
-
   return (
     <AppBar
       toolbar={<MyToolbar />}
@@ -25,6 +24,6 @@ export default function MyAppBar() {
           <Logout />
         </UserMenu>
       }
-    ></AppBar>
+    />
   );
 }
