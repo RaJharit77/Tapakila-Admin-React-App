@@ -1,4 +1,4 @@
-import { List, useListContext, TopToolbar, CreateButton } from "react-admin";
+import { List, useListContext, TopToolbar, CreateButton, Pagination } from "react-admin";
 import { Grid, Typography, Box, Alert } from "@mui/material";
 import { EventCard } from "./EventCard";
 
@@ -10,38 +10,17 @@ const ListActions = () => (
 
 export const EventList = () => {
   return (
-    <List
-      actions={<ListActions />}
-      sort={{ field: 'event_date', order: 'DESC' }}
-      perPage={25}
-    >
+    <List actions={<ListActions />} sort={{ field: 'event_date', order: 'DESC' }} perPage={25}>
       <EventListContent />
     </List>
   );
 };
 
 const EventListContent = () => {
-  // ✅ Récupération de l'erreur
   const { data = [], isLoading, error } = useListContext();
 
-  if (isLoading) {
-    return (
-      <Box sx={{ p: 4, display: 'flex', justifyContent: 'center' }}>
-        <Typography>Chargement des événements en cours...</Typography>
-      </Box>
-    );
-  }
-
-  // ✅ Affichage propre si le serveur renvoie une erreur (500, 401, etc.)
-  if (error) {
-    return (
-      <Box sx={{ p: 2 }}>
-        <Alert severity="error" sx={{ mb: 2 }}>
-          Impossible de charger les événements : {error.message}
-        </Alert>
-      </Box>
-    );
-  }
+  if (isLoading) return <Box p={4}><Typography>Chargement...</Typography></Box>;
+  if (error) return <Alert severity="error">Erreur : {error.message}</Alert>;
 
   const today = new Date();
   today.setHours(0, 0, 0, 0);
@@ -64,9 +43,7 @@ const EventListContent = () => {
           ))}
         </Grid>
       ) : (
-        <Typography variant="body1" sx={{ mb: 3 }}>
-          Aucun événement à venir pour le moment.
-        </Typography>
+        <Typography variant="body1" sx={{ mb: 3 }}>Aucun événement à venir.</Typography>
       )}
 
       {pastEvents.length > 0 && (
@@ -83,6 +60,8 @@ const EventListContent = () => {
           </Grid>
         </>
       )}
+
+      <Pagination rowsPerPageOptions={[10, 25, 50]} />
     </Box>
   );
 };
