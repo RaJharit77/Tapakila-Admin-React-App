@@ -15,8 +15,9 @@ const CustomMenuItem = ({
   const location = useLocation();
   const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
 
-  const textColor = isActive ? "#14213D" : "#ffffff";
-  const iconColor = isActive ? "#14213D" : "#ffffff";
+  const activeColor = "#14213D";
+  const inactiveColor = "#ffffff";
+  const currentColor = isActive ? activeColor : inactiveColor;
 
   return (
     <Menu.Item
@@ -25,7 +26,7 @@ const CustomMenuItem = ({
       leftIcon={leftIcon}
       sx={{
         background: isActive ? "#FFBA08" : "#0077FF",
-        color: textColor,
+        color: `${currentColor} !important`,
         margin: "10px 0",
         fontWeight: "bold",
         border: isActive ? "2px solid #FFBA08" : "2px solid #0077FF",
@@ -35,11 +36,11 @@ const CustomMenuItem = ({
         transition: "all 0.3s ease",
 
         "& .MuiListItemIcon-root": {
-          color: iconColor,
+          color: `${currentColor} !important`,
         },
 
         "& .MuiListItemText-primary": {
-          color: textColor,
+          color: `${currentColor} !important`,
           fontFamily: "Poppins",
           fontWeight: "bold",
         },
@@ -47,10 +48,30 @@ const CustomMenuItem = ({
         "&:hover": {
           background: isActive ? "#FFBA08" : "#005ce6",
           "& .MuiListItemIcon-root": {
-            color: iconColor,
+            color: `${currentColor} !important`,
           },
           "& .MuiListItemText-primary": {
-            color: textColor,
+            color: `${currentColor} !important`,
+          },
+        },
+
+        "&.Mui-selected": {
+          background: "#FFBA08",
+          color: `${activeColor} !important`,
+          "& .MuiListItemIcon-root": {
+            color: `${activeColor} !important`,
+          },
+          "& .MuiListItemText-primary": {
+            color: `${activeColor} !important`,
+          },
+          "&:hover": {
+            background: "#FFBA08",
+            "& .MuiListItemIcon-root": {
+              color: `${activeColor} !important`,
+            },
+            "& .MuiListItemText-primary": {
+              color: `${activeColor} !important`,
+            },
           },
         },
       }}
