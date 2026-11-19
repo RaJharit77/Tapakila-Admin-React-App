@@ -15,10 +15,8 @@ const CustomMenuItem = ({
   const location = useLocation();
   const isActive = location.pathname === to || location.pathname.startsWith(`${to}/`);
 
-  // ✅ Couleur principale (Texte + Icône) : Bleu Nuit sur fond Or (actif), Blanc sur fond Bleu (inactif)
   const mainColor = isActive ? "#14213D" : "#ffffff";
-  
-  // ✅ Couleur au survol : même couleur mais avec une opacité réduite (teinte diminuée)
+
   const hoverColor = isActive ? "rgba(20, 33, 61, 0.6)" : "rgba(255, 255, 255, 0.6)";
 
   return (
@@ -34,7 +32,6 @@ const CustomMenuItem = ({
         padding: "10px 10px",
         transition: "all 0.3s ease",
 
-        // ✅ Application de la couleur permanente
         color: mainColor,
         "& .MuiListItemText-primary": {
           color: mainColor,
@@ -45,9 +42,8 @@ const CustomMenuItem = ({
           color: mainColor,
         },
 
-        // ✅ Survol : diminution du teint (opacité)
         "&:hover": {
-          background: isActive ? "#FFBA08" : "#005ce6", // Le fond s'assombrit légèrement
+          background: isActive ? "#FFBA08" : "#005ce6",
           color: hoverColor,
           "& .MuiListItemText-primary": {
             color: hoverColor,
