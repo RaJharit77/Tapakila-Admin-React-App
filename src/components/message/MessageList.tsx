@@ -25,12 +25,15 @@ const MyExpand = () => {
   );
 };
 
-
 const CustomPagination = () => <Pagination rowsPerPageOptions={[5, 10, 25]} />;
 
 export default function MessageList() {
   return (
-    <List pagination={<CustomPagination />} exporter={false} empty={<CustomEmpty />}>
+    <List 
+      pagination={<CustomPagination />} 
+      exporter={false} 
+      empty={<CustomEmpty />}
+    >
       <Datagrid
         bulkActionButtons={false}
         expand={<MyExpand />}
