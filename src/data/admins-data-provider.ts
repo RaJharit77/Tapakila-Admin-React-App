@@ -17,9 +17,8 @@ import {
 } from "react-admin";
 import { API_URL } from "../api/api";
 
-const url = `${API_URL}/api/admins`;
+const url = `${API_URL}/api/admin`;
 
-// ✅ Correction : Définition d'un type propre pour les options de fetch
 interface RequestOptions {
     method?: string;
     body?: string;
@@ -30,7 +29,7 @@ const httpClient = (url: string, options: RequestOptions = {}) => {
     if (!options.headers) {
         options.headers = new Headers({ Accept: 'application/json' });
     }
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('accessToken');
     if (token) {
         options.headers.set('Authorization', `Bearer ${token}`);
     }
@@ -42,10 +41,10 @@ export const adminDataProvider = {
         _resource: string,
         _params: GetListParams
     ): Promise<GetListResult<RecordType>> => {
-        void _params; // Ignoré volontairement (pas de pagination côté API pour l'instant)
+        void _params;
         const { json } = await httpClient(url);
         return {
-            data: json.map((item: RecordType & { admin_id: string }) => ({ ...item, id: item.admin_id })),
+            data: json.map((item: RaRecord & { admin_id: Identifier }) => ({ ...item, id: item.admin_id })),
             total: json.length,
         };
     },
@@ -64,7 +63,7 @@ export const adminDataProvider = {
     ): Promise<CreateResult<RecordType & { id: Identifier }>> => {
         const { json } = await httpClient(url, {
             method: 'POST',
-            body: JSON.stringify(params.data),
+            body: JSON.stringify({ ...params.data, isAdminCreate: true }),
         });
         return { data: { ...json, id: json.admin_id } as RecordType & { id: Identifier } };
     },
